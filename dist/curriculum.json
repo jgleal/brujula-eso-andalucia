@@ -748,7 +748,7 @@
   {
     "id": "efi",
     "name": "Educación Física",
-    "icon": "↗",
+    "icon": "EF",
     "color": "#48a29c",
     "criteria": [
       {
@@ -1611,7 +1611,7 @@
     "id": "efi",
     "name": "Educación Física",
     "course": 2,
-    "icon": "↗",
+    "icon": "EF",
     "color": "#48a29c",
     "criteria": [
       {
@@ -1712,7 +1712,7 @@
     "id": "efi",
     "name": "Educación Física",
     "course": 3,
-    "icon": "↗",
+    "icon": "EF",
     "color": "#48a29c",
     "criteria": [
       {
@@ -1813,7 +1813,7 @@
     "id": "efi",
     "name": "Educación Física",
     "course": 4,
-    "icon": "↗",
+    "icon": "EF",
     "color": "#48a29c",
     "criteria": [
       {
