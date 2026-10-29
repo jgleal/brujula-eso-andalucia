@@ -53,3 +53,11 @@ El modelo inicial promedia criterios dentro de competencias y luego competencias
 - `scripts/create-assets.cjs`: generador gráfico original, requiere sharp y adaptar su ruta de salida local si se reutiliza.
 
 Exportación JSON v3 incluye todos los cuadernos y criterios personalizados. La importación valida cursos, códigos, notas y tamaño; confirma el reemplazo. Se admiten copias v1 y v2; las notas existentes se convierten en entradas individuales sin perder ceros. El borrado de notas afecta solo al cuaderno activo. No hay sincronización entre dispositivos ni funcionamiento offline garantizado. Las tipografías se sirven localmente (licencias OFL en assets/fonts). La pantalla de inicio usa CSS integrado y permanece visible hasta que están listos los estilos y el cuaderno. No se envían calificaciones.
+
+## Contenido y búsquedas
+
+La portada presenta la calculadora de notas por criterios de ESO en Andalucía. La guía estática `calcular-nota-final-eso-andalucia.html` responde a cómo calcular la nota final, diferencias entre media de criterios y competencias, notas acumuladas por evaluación, varias valoraciones de un criterio y objetivos para aprobar o subir la media. Incluye ejemplos, preguntas frecuentes y fuentes, sin duplicar páginas por curso ni prometer una nota oficial. El contenido está enlazado desde la interfaz y disponible sin JavaScript.
+
+`node test-seo.mjs` comprueba títulos y descripciones únicos, canonical, Open Graph, sitemap, JSON-LD y enlaces locales. El workflow ejecuta la comprobación después de configurar la URL de Pages. No se añade meta keywords ni marcado de valoraciones ficticias.
+
+Para medir consultas e indexación, el propietario puede verificar en Google Search Console la propiedad de prefijo `https://jgleal.github.io/brujula-eso-andalucia/` y enviar `sitemap.xml`. La web no incluye analítica ni necesita añadirla para usar Search Console. La publicación no garantiza indexación ni posiciones.
