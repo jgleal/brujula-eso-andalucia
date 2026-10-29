@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createNotebook,openNotebook,toggleSubject,validateLibrary,migrateV1,courseCatalog} from './dist/notebooks.js';
+import {summarize,parseBulk} from './dist/engine.js';
+const all=JSON.parse(await readFile('dist/curriculum.json','utf8'));
+const a=createNotebook(1,'2026/27',all),lib={version:2,activeId:a.id,notebooks:[a]};
+a.grades.mat={'1.1':{'1':0,'2':8}};
+const b=openNotebook(lib,2,'2026/27',all);assert.deepEqual(b.grades,{});
+const c=openNotebook(lib,1,'2027/28',all);assert.deepEqual(c.grades,{});
+assert.equal(openNotebook(lib,1,'2026/27',all).grades.mat['1.1']['2'],8);
+toggleSubject(a,'mat',false);toggleSubject(a,'mat',true);assert.equal(a.grades.mat['1.1']['1'],0);
+toggleSubject(a,'alt',true);assert(!a.selectedSubjects.includes('fr'));
+const d=openNotebook(lib,4,'2026/27',all);toggleSubject(d,'mata',true);assert(!d.selectedSubjects.includes('matb'));
+assert.deepEqual(validateLibrary(JSON.parse(JSON.stringify(lib)),all),lib);
+const old={version:1,year:'2026/27',method:'competencies',language:'fr',atedu:'',grades:{mat:{'1.1':{'1':0}}}};
+assert.equal(migrateV1(old,all).notebooks[0].grades.mat['1.1']['1'],0);
+const invalid=structuredClone(lib);invalid.notebooks[0].grades.mat['1.1']['1']=11;assert.throws(()=>validateLibrary(invalid,all));
+const invalidCode=structuredClone(lib);invalidCode.notebooks[0].grades.mat['99.9']={'1':6};assert.throws(()=>validateLibrary(invalidCode,all));
+for(const course of [1,2,3,4]){const book=createNotebook(course,'2026/27',all),cat=courseCatalog(all,book);assert(cat.length>10);const ids=new Set();for(const s of cat){assert(!ids.has(s.id));ids.add(s.id);const codes=new Set();for(const c of s.criteria){assert(!codes.has(c.code),`${course}/${s.id}/${c.code}`);codes.add(c.code);assert(c.text.trim());assert.equal(c.competency,Number(c.code.split('.')[0]));}assert.equal(summarize(s,book).value,null);} }
+assert.equal(parseBulk('MAT.4.1.1: 7,5',all.find(s=>s.course===4&&s.id==='mata'))[0].value,7.5);
+console.log('Course/year isolation, zero preservation, selections, import, migration and all curriculum structures passed.');
