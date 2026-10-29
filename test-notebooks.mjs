@@ -11,11 +11,17 @@ assert.equal(openNotebook(lib,1,'2026/27',all).grades.mat['1.1']['2'],8);
 toggleSubject(a,'mat',false);toggleSubject(a,'mat',true);assert.equal(a.grades.mat['1.1']['1'],0);
 toggleSubject(a,'alt',true);assert(!a.selectedSubjects.includes('fr'));
 const d=openNotebook(lib,4,'2026/27',all);toggleSubject(d,'mata',true);assert(!d.selectedSubjects.includes('matb'));
-assert.deepEqual(validateLibrary(JSON.parse(JSON.stringify(lib)),all),lib);
+const migrated=validateLibrary(JSON.parse(JSON.stringify(lib)),all);assert.equal(migrated.version,3);assert.equal(migrated.notebooks[0].grades.mat['1.1']['1'][0].value,0);assert.deepEqual(validateLibrary(JSON.parse(JSON.stringify(migrated)),all),migrated);
 const old={version:1,year:'2026/27',method:'competencies',language:'fr',atedu:'',grades:{mat:{'1.1':{'1':0}}}};
-assert.equal(migrateV1(old,all).notebooks[0].grades.mat['1.1']['1'],0);
+assert.equal(migrateV1(old,all).notebooks[0].grades.mat['1.1']['1'][0].value,0);
 const invalid=structuredClone(lib);invalid.notebooks[0].grades.mat['1.1']['1']=11;assert.throws(()=>validateLibrary(invalid,all));
 const invalidCode=structuredClone(lib);invalidCode.notebooks[0].grades.mat['99.9']={'1':6};assert.throws(()=>validateLibrary(invalidCode,all));
 for(const course of [1,2,3,4]){const book=createNotebook(course,'2026/27',all),cat=courseCatalog(all,book);assert(cat.length>10);const ids=new Set();for(const s of cat){assert(!ids.has(s.id));ids.add(s.id);const codes=new Set();for(const c of s.criteria){assert(!codes.has(c.code),`${course}/${s.id}/${c.code}`);codes.add(c.code);assert(c.text.trim());assert.equal(c.competency,Number(c.code.split('.')[0]));}assert.equal(summarize(s,book).value,null);} }
 assert.equal(parseBulk('MAT.4.1.1: 7,5',all.find(s=>s.course===4&&s.id==='mata'))[0].value,7.5);
 console.log('Course/year isolation, zero preservation, selections, import, migration and all curriculum structures passed.');
+
+const bad=structuredClone(migrated);bad.notebooks[0].grades.mat['1.1']['1'][0].value='8';assert.throws(()=>validateLibrary(bad,all));
+const dup=structuredClone(migrated);dup.notebooks[0].grades.mat['1.1']['1'].push(dup.notebooks[0].grades.mat['1.1']['1'][0]);assert.throws(()=>validateLibrary(dup,all));
+const badDate=structuredClone(migrated);badDate.notebooks[0].grades.mat['1.1']['1'][0].date='2026-02-31';assert.throws(()=>validateLibrary(badDate,all));
+const shifted=structuredClone(migrated);shifted.notebooks[0].grades.mat['1.1']['1'].push(...shifted.notebooks[0].grades.mat['1.1']['2']);delete shifted.notebooks[0].grades.mat['1.1']['2'];assert.equal(validateLibrary(shifted,all).notebooks[0].grades.mat['1.1']['1'].length,2);
+console.log('V1/V2 migration, V3 round-trip and malformed entry validation passed.');

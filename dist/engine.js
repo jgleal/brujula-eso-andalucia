@@ -1,9 +1,20 @@
 export const mean = values => { const a=values.filter(x=>typeof x==='number'&&Number.isFinite(x));return a.length?a.reduce((s,v)=>s+v,0)/a.length:null; };
 export const round = v => v===null?null:Math.round((v+Number.EPSILON)*100)/100;
-export function criterionValue(state,subject,code,period='course'){
+export function entriesFor(state,subject,code,period='course'){
  const grades=state.grades[subject]?.[code]||{};
- if(period!=='course')return grades[period]??null;
- return grades.final??grades['3']??grades['2']??grades['1']??null;
+ const entries=p=>{const value=grades[p];return typeof value==='number'?[{value,label:'Valoración anterior',date:'',id:'legacy-'+p,period:p}]:(value||[]).map(e=>({...e,period:p}));};
+ if(period!=='course')return entries(period);
+ const final=entries('final');return final.length?final:['1','2','3'].flatMap(entries);
+}
+export function criterionValue(state,subject,code,period='course'){
+ return mean(entriesFor(state,subject,code,period).map(e=>e.value));
+}
+export function appendGrade(state,subject,code,period,value,label='',date=''){
+ if(!['1','2','3','final'].includes(period)||!Number.isFinite(value)||value<0||value>10)throw Error('Nota o evaluación inválida.');
+ state.grades[subject]??={};state.grades[subject][code]??={};
+ const current=entriesFor(state,subject,code,period).map(({period,...e})=>e);
+ if(current.length>=500)throw Error('Máximo de 500 notas por criterio y evaluación.');
+ state.grades[subject][code][period]=[...current,{id:crypto.randomUUID(),value,label,date}];
 }
 export function summarize(subject,state,period='course',overrides={}){
  const values=subject.criteria.map(c=>({ ...c,value:Object.hasOwn(overrides,c.code)?overrides[c.code]:criterionValue(state,subject.id,c.code,period) }));
@@ -33,15 +44,14 @@ export function validateState(s,catalog){
 }
 export function parseBulk(text,subject){
  const lines=text.trim().split(/[;\n]+/).map(x=>x.trim()).filter(Boolean);
- const results=[],seen=new Set();
+ const results=[];
  for(const line of lines){
   const m=line.match(/^(?:[A-Z]+\.[1-4]\.)?(\d{1,2}\.\d{1,2})\.?\s*[:=\t ]\s*(\d+(?:[.,]\d+)?)\s*$/i);
   if(!m)throw Error('No entiendo «'+line+'». Usa el formato 1.1: 7,5.');
   const code=m[1],value=Number(m[2].replace(',','.'));
   if(!subject.criteria.some(c=>c.code===code))throw Error('El criterio '+code+' no existe en esta materia.');
   if(value<0||value>10)throw Error('Las notas deben estar entre 0 y 10.');
-  if(seen.has(code))throw Error('El criterio '+code+' está repetido.');
-  seen.add(code);results.push({code,value});
+  results.push({code,value});
  }
  if(!results.length)throw Error('Pega al menos un criterio y su nota.');
  return results;

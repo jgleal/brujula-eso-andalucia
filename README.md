@@ -41,7 +41,7 @@ Documentación: https://docs.github.com/en/pages/getting-started-with-github-pag
 
 `dist/fuentes.html` explica y enlaza BOJA 2023, texto consolidado 2026, BOE y PEC del Néstor Almendros (12/11/2025). Cada materia enlaza a su PDF. El catálogo autonómico no garantiza la oferta de un centro. Francés es una referencia adaptada de Lengua Extranjera; MLCT, proyectos, Religión y materias propias requieren concreción docente.
 
-El modelo inicial promedia criterios dentro de competencias y luego competencias. Los valores pendientes se excluyen provisionalmente. La vista de curso toma la última valoración disponible. No calcula promoción, no sustituye la evaluación docente ni inventa notas de instrumentos. ATEDU no se califica. Religión se excluye por defecto de la media global de comparación.
+El modelo inicial promedia criterios dentro de competencias y luego competencias. Los valores pendientes se excluyen provisionalmente. Cada criterio admite varias notas con fecha y actividad opcionales. Su estimación es la media de las entradas; la vista Curso reúne las de las tres evaluaciones y da prioridad a las valoraciones finales confirmadas, sin borrar el historial. Esta media de entradas es un supuesto de Brújula que debe contrastarse con el docente. No calcula promoción, no sustituye la evaluación docente ni inventa notas de instrumentos. ATEDU no se califica. Religión se excluye por defecto de la media global de comparación.
 
 ## Estructura y datos
 
@@ -52,4 +52,4 @@ El modelo inicial promedia criterios dentro de competencias y luego competencias
 - `dist/assets/`: favicon, iconos 180/192/512 y piezas sociales 1200×630, 1080×1080 y 1080×1920, con SVG editables.
 - `scripts/create-assets.cjs`: generador gráfico original, requiere sharp y adaptar su ruta de salida local si se reutiliza.
 
-Exportación JSON v2 incluye todos los cuadernos y criterios personalizados. La importación valida cursos, códigos, notas y tamaño; confirma el reemplazo. Se admiten copias v1. El borrado de notas afecta solo al cuaderno activo. No hay sincronización entre dispositivos ni funcionamiento offline garantizado. Las fuentes tipográficas se solicitan a Google Fonts; no se envían calificaciones.
+Exportación JSON v3 incluye todos los cuadernos y criterios personalizados. La importación valida cursos, códigos, notas y tamaño; confirma el reemplazo. Se admiten copias v1 y v2; las notas existentes se convierten en entradas individuales sin perder ceros. El borrado de notas afecta solo al cuaderno activo. No hay sincronización entre dispositivos ni funcionamiento offline garantizado. Las tipografías se sirven localmente (licencias OFL en assets/fonts). La pantalla de inicio usa CSS integrado y permanece visible hasta que están listos los estilos y el cuaderno. No se envían calificaciones.
